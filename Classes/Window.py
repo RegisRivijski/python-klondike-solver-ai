@@ -186,9 +186,9 @@ class Window:
     def endGame(self, isVictory):
         if isVictory:
             color = "green3"
-            text = "GAME OVER : VICTORY !"
+            text = "VICTORY"
         else:
             color = "orange"
-            text = "GAME OVER : DEFEAT."
+            text = "DEFEAT"
         self.B.pack_forget()
         self.canvas.create_text(500, 350, fill=color, font="Arial 30 bold", text=text)
