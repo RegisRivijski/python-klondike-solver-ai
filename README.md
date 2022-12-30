@@ -1,54 +1,52 @@
 # python-klondike-solver-ai
 
-Курсовий проект з предмету "Штучний інтелект"
+The first algorithm of solving is a heuristic one. Every possible moves have a number that characterize the best move. The second algorithm, called “rollout algorithm”, try several combination of moves and execute the one that has the most priority.
 
-Перший алгоритм рішення є евристичним. Кожен можливий хід має номер, який характеризує найкращий хід. Другий алгоритм, званий "алгоритмом розкладу", пробує кілька комбінацій ходів та виконує ту, яка має найбільший пріоритет.
+Klondike's rule
 
-Правило Клондайка
+There is different stacks : the pile, the talon, the suits stacks, the build stacks. The game is over when all the cards of the 4 colors are stacked on the 4 suits stacks on the top left, from ace to king. If the game is in a dead-end, the player lost the game. During the game, the player can stack any card on top of a suit stack if that card is of the same color and superior to the one on the suit stack. The player can also put a card on a build stack if this card is inferior and of the opposite color. The talon can give 3 faced up card to the pile, only the one on the top is movable. At the beginning, all the suit stacks and the pile are empty. The 7 build stack have one to seven card, the card at the top is the only one faced up.
 
-Існують різні стоси: стоси, талон, стоси мастей, стоси зборки. Гра закінчується, коли всі карти 4 мастей будуть складені на стопки 4 мастей зліва вгорі, від туза до короля. Якщо гра зайшла в глухий кут, гравець програв. Під час гри гравець може покласти будь-яку карту на стос масті, якщо ця карта того ж кольору і вище за ту, що лежить на стосі масті. Гравець також може покласти картку на стос масті, якщо ця карта поступається їй і має протилежний колір. Тальйон може покласти в стопку 3 перевернуті карти, тільки та, що лежить зверху, є рухомою. На початку всі стоси мастей і стоси порожні. У стосі 7 мастей знаходяться від однієї до семи карт, карта на вершині - єдина, що лежить вгору.
+Structure of the program
 
-Структура програми
+The program is coded in Python 3. It consists of 2 classes :
+•	Game : represent the game and contains the 2 algorithms.
+•	Window : the definition of the Tkinter UI used to see the evolution of the game, turn by turn.
 
-Програма написана мовою Python 3. Вона складається з 2 класів:
-- Game: представляє гру і містить 2 алгоритми.
-- Вікно : визначення інтерфейсу користувача Tkinter, що використовується для перегляду ходу гри, хід за ходом.
+The game is stored in a list of lists of tuples. Each cells represent one stack, the pile or the talon.
+The user can modify the content of main.py to either use the rollout or the heuristic strategy. It is also possible to not display the window in order to play as many games as possible.
 
-Гра зберігається у списку списків кортежів. Кожен осередок представляє одну стопку, купу або талон.
-Користувач може змінити вміст файлу main.py, щоб використовувати або стратегію викочування або евристичну стратегію. Також можна не відображати вікно, щоб грати якомога більше ігор.
+The hardest part was to detect whether the game is in a dead end, or not. To do that, the function defeat() of Game, checks if a card or a set of cards is always moved between the two same stacks. It checks also if a card of the build stacks has been recently turned faced up, or for the talon, recently uncovered.
+Even though the function detect most of the dead ends, there’s still some undetected ones. In this case, the game is running indefenitly. This is why in the simulations I also counted the games that takes too much time.
 
-Найскладнішим було визначити, чи гра в глухому куті чи ні. Для цього функція defeat() гри Game перевіряє, чи завжди карта чи набір карт переміщається між двома однаковими стосами. Вона також перевіряє, чи була карта зі стопки складання нещодавно перевернута обличчям вгору, або, для талона, нещодавно розкрита.
-Незважаючи на те, що функція виявляє більшість глухих ситуацій, все ще є деякі невиявлені. І тут гра проходить без помилок. Тому в симуляціях я також підраховував ігри, на які йде занадто багато часу.
+Heuristic strategy
 
-Евристична стратегія
+With this strategy every possible moves have a heuristic value. This value serve as priority for the computer to choose which move to perform. The value can be found in the article. The possibles moves are: from build to build stack, from build to suit stack, from talon to build stack, from talon to suits stack. Only the move from suit stack to build stack is not considered in my version of the game, to simplify the detection of the defeat.
 
-За цієї стратегії кожен можливий хід має евристичне значення. Це значення є пріоритетом для комп'ютера під час вибору ходу. Значення можна знайти у статті. Можливі ходи: з білда в стек білдів, з білда в стек мастей, з талона в стек білдів, з талона в стек мастей. У моїй версії гри не розглядається лише хід зі стеку мастей у стек білдів, щоб спростити визначення поразки.
+The algorithm of play with this method is this one :
+1.	The computer get every possibles moves
+2.	The first priority criterion are applied
+3.	If there's several moves at the maximum priority, we apply the second priority criterion
+4.	If there's still several moves at the maximum priority, the computer choose a random one. Otherwise, it play the move with the highest priority.
 
-Алгоритм гри за цим методом такий:
-1. Комп'ютер отримує всі можливі ходи
-2. Застосовується критерій першого пріоритету
-3. Якщо є кілька ходів із максимальним пріоритетом, ми застосовуємо другий критерій пріоритету.
-4. Якщо все ще є кілька ходів із максимальним пріоритетом, комп'ютер вибирає випадковий хід. Інакше він грає хід з найвищим пріоритетом.
+With this heuristic strategy, out of 1000 game, 150 were won, 829 were lost and 21 were taking too much time to be taken into account.
 
-За допомогою цієї евристичної стратегії з 1000 партій 150 було виграно, 829 програно і 21 зайняло занадто багато часу, щоб бути прийнятою до уваги.
+This proportion is close to the proportion obtained by the team of researchers.
 
-Ця пропорція близька до пропорції, отриманої командою дослідників.
+Rollout strategy
 
-Стратегія викочування
+The rollout strategy can’t really be applied to the klondike game, because it is working with series of trial and restore of the game. But still it’s interesting to now the result and the success rate of this algorithm.
 
-Стратегія розгортання не може бути дійсно застосована до гри клондайк, тому що вона працює із серією проб та відновлення гри. Але все ж таки цікаво подивитися на результат і відсоток успіху цього алгоритму.
+My implementation is using the heuristics of the moves, used in the first part of my project. Let’s consider that the game is at the state n, the computer follow this process:
 
-Моя реалізація використовує евристику ходів, яка була використана в першій частині мого проекту. Будемо вважати, що гра перебуває у стані n, комп'ютер виконує такий процес:
+1.	Find the moves : n
+2.	Execute one move : n+1
+3.	Find the moves : n+1
+4.	Execute one move : n+2, and so on...
+5.	If the number of moves has been reached, save the move list and go back to step 1.
+6.	If all the possibles series of moves has been checked, execute the one that has the maximum priority
 
-1. Знайти ходи: n
-2. Виконати один хід: n+1
-3. Знайти ходи: n+1
-4. Виконати один хід: n+2, і так далі...
-5. Якщо кількість ходів досягнуто, збережіть список ходів та поверніться до кроку 1.
-6. Якщо всі можливі серії ходів були перевірені, виконайте ту, яка має максимальний пріоритет.
+For 2 rollout, out of 1000 games, 130 were won, 851 were lost and 19 took too much time. For 3 rollout, out of 1000 games, 132 were won, 839 were lost and 29 took too much time. In the article, the success rate with 2 rollout is close to 50%, and greater than 50% with 3 rollouts.
 
-Для 2 ходу, з 1000 партій, 130 було виграно, 851 програно і 19 зайняло занадто багато часу. Для 3 рокіровки, з 1000 ігор, 132 були виграні, 839 були програні і 29 зайняли занадто багато часу. У статті йдеться про те, що відсоток успіху при 2 роулатах наближається до 50%, а при 3 роулатах перевищує 50%.
+The team don’t details how the computer choose which move to perform, so I applied the heuristic of the first algorithm. Each move of a serie is evaluated. The value of the serie is equal to the sum of all values of each move of the serie. The computer play the serie of move that has the maximum value. I also tried to evaluate the serie of move by counting the number of cards on the suits stack, but the ratio of game won was even smaller.
 
-Команда не деталізує, як комп'ютер вибирає, який хід зробити, тому я застосував евристику першого алгоритму. Кожен перебіг серії оцінюється. Значення серії дорівнює сумі всіх значень кожного ходу серії. Комп'ютер грає серію ходів, яка має максимальне значення. Я також намагався оцінити серію ходів, підраховуючи кількість карток у стопці мастей, але коефіцієнт виграних партій був ще меншим.
-
-Частина коду виконана, евристичний алгоритм працює та дає очікувані результати. Незважаючи на те, що алгоритм працює, функція оцінки серії ходів не працює так, як очікувалося, тому що співвідношення виграних партій здається таким самим, як і при використанні евристичної стратегії. Необхідно створити повнішу функцію оцінки.
+The code part is done, the heuristic algorithm is working and give expected results. Even though the rollout algorithm is working, the evaluation function of the series of moves is not working has expected because the ratio of games won seems to be the same as the one with the heuristic strategy. A more complete evaluation function has to be created.
