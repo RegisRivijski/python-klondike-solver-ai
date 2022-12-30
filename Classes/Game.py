@@ -149,7 +149,7 @@ class Game:
                     tmp.append(self.available_moves[i])
             self.available_moves = tmp.copy()
             if len(self.available_moves) > 0:
-                if len(self.available_moves) > 1:  # if there's several maximums
+                if len(self.available_moves) > 1:
                     rdmNbr = randint(0, len(self.available_moves) - 1)
                     maxMove = rdmNbr
                 else:
