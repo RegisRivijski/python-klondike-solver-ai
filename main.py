@@ -17,7 +17,7 @@ def playCallBack():
 
 
 def playRolloutCallBack():
-    game.playRollout(1)
+    game.playRollout(5)
     fen.buildGame()
     if game.isOver():
         fen.endGame(True)
