@@ -26,6 +26,6 @@ def playRolloutCallBack():
 
 
 game = Game()
-fen = Window(playCallBack, game.game)
+fen = Window(playRolloutCallBack, game.game)
 fen.buildGame()
 fen.window.mainloop()

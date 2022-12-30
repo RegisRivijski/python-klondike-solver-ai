@@ -12,7 +12,7 @@ class Window:
         self.window = Tk()
         self.window.geometry("1000x700")
         self.window.resizable(width=False, height=False)
-        self.B = Button(self.window, text="Next move", command=callBackButton)
+        self.B = Button(self.window, text="Зробити крок", command=callBackButton)
         self.B.pack()
         self.createGame()
         if game == None:
@@ -88,7 +88,7 @@ class Window:
         self.buildGame()
 
     def createGame(self):
-        self.canvas = Canvas(self.window, bg="green", borderwidth=5)
+        self.canvas = Canvas(self.window, bg="black", borderwidth=5)
         self.canvas.pack(fill="both", expand="yes")
 
     def drawCard(self, pos, card):
@@ -191,4 +191,4 @@ class Window:
             color = "orange"
             text = "DEFEAT"
         self.B.pack_forget()
-        self.canvas.create_text(500, 350, fill=color, font="Arial 30 bold", text=text)
+        self.canvas.create_text(500, 600, fill=color, font="Arial 30 bold", text=text)
