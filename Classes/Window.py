@@ -14,7 +14,7 @@ class Window:
         self.window.resizable(width=False, height=False)
         self.interval = interval
         self.createGame()
-        if game == None:
+        if game is None:
             self.game.append(
                 [
                     (3, "D", 0),
@@ -108,16 +108,9 @@ class Window:
         )
         if card[2] == 0:
             return
-        if card[1] == "D" or card[1] == "H":
-            color = "Red"
-        else:
-            color = "Black"
+        color = "Red" if card[1] in ["D", "H"] else "Black"
         nbr = ""
-        if card[0] == 1 or card[0] > 10:
-            nbr = self.__characters[card[0]]
-        else:
-            nbr = card[0]
-
+        nbr = self.__characters[card[0]] if card[0] == 1 or card[0] > 10 else card[0]
         self.canvas.create_text(
             pos[0] + 15, pos[1] + 15, fill=color, font="Times 15 bold", text=nbr
         )
@@ -139,11 +132,8 @@ class Window:
 
     def buildGame(self):
         self.canvas.delete("all")
-        color = "grey"
-        if not self.game[0]:
-            color = "black"
-
         if len(self.game[0]) >= 1:
+            color = "grey" if self.game[0] else "black"
             self.canvas.create_rectangle(10, 10, 110, 150, fill=color, outline="white")
         else:
             self.canvas.create_oval(
@@ -154,11 +144,8 @@ class Window:
                 130, 10, 230, 150, fill="black", outline="white"
             )
         else:
-            i = 1
-            for each in self.game[1]:
+            for i, each in enumerate(self.game[1], start=1):
                 self.drawCard((130 + i * 25, 10), each)
-                i += 1
-
         for i in range(2, 6):
             if len(self.game[i]) == 0:
                 self.canvas.create_rectangle(
@@ -169,7 +156,7 @@ class Window:
 
         for i in range(6, len(self.game)):
             if len(self.game[i]) > 0:
-                for j in range(0, len(self.game[i])):
+                for j in range(len(self.game[i])):
                     self.drawCard((10 + 120 * (i - 6), 200 + j * 25), self.game[i][j])
             else:
                 self.canvas.create_rectangle(
