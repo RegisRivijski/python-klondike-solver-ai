@@ -189,4 +189,4 @@ class Window:
             color = "red"
             text = "Defeat"
         self.interval.stop()
-        self.canvas.create_text(422, 350, fill=color, font="Times 38 bold", text=text)
+        self.canvas.create_text(422, 500, fill=color, font="Times 38 bold italic", text=text)
