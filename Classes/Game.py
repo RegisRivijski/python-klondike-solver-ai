@@ -1,6 +1,22 @@
 from random import randint
 
 
+def heuristic(move):
+    if 2 <= move[2] <= 5 and (6 <= move[0] <= 13 or move[0] == 1):
+        return 5
+    if move[0] == 1 and 6 <= move[2] <= 13:
+        return 5
+    return -10 if 2 <= move[0] <= 5 and 6 <= move[2] <= 13 else 0
+
+
+def evaluateGame(moves_list):
+    return sum(moves_list[i][0] for i in range(len(moves_list)))
+
+
+def cardIsRed(card):
+    return card in ["D", "H"]
+
+
 class Game:
     game = [[] for i in range(13)]
     game_history = []
@@ -39,7 +55,7 @@ class Game:
             nbr = randint(1, 13)
             exists1 = any((nbr, color, 0) in x for x in self.game)
             exists2 = any((nbr, color, 1) in x for x in self.game)
-        return (nbr, color)
+        return nbr, color
 
     def isOver(self):
         for i in range(2, 6):
@@ -51,15 +67,8 @@ class Game:
                     return False
         return True
 
-    def heuristic(self, move):
-        if 2 <= move[2] <= 5 and (6 <= move[0] <= 13 or move[0] == 1):
-            return 5
-        if move[0] == 1 and 6 <= move[2] <= 13:
-            return 5
-        return -10 if 2 <= move[0] <= 5 and 6 <= move[2] <= 13 else 0
-
     def differentiateHeuristic(self, move):
-        if 6 <= move[0] <= 13 and move[2] >= 6 and move[2] <= 13:
+        if 6 <= move[0] <= 13 and 6 <= move[2] <= 13:
             if len(self.game[move[0]][:-1]):
                 return 1
             if self.game[move[0]][move[1] - 1][2] == 0:
@@ -68,7 +77,7 @@ class Game:
             if self.game[move[0]][move[1]][0] != 13:
                 return 1
             if self.game[move[0]][move[1]][0] == 13 and self.cardFacedUp(
-                (12, self.game[move[0]][move[1]][1])
+                    (12, self.game[move[0]][move[1]][1])
             ):
                 return 1
             if self.game[move[0]][move[1]][0] == 13:
@@ -95,7 +104,7 @@ class Game:
 
     def evaluateMoves(self, moves_list):
         for move in moves_list:
-            priority = self.heuristic([move[1], move[2], move[3], move[4]])
+            priority = heuristic([move[1], move[2], move[3], move[4]])
             move[0] = priority
 
         maxPriority = -1000
@@ -108,9 +117,9 @@ class Game:
             return tmp.copy()
         for move in tmp:
             priority = (
-                move[0]
-                + self.differentiateHeuristic([move[1], move[2], move[3], move[4]])
-                + move[0]
+                    move[0]
+                    + self.differentiateHeuristic([move[1], move[2], move[3], move[4]])
+                    + move[0]
             )
             move[0] = priority
         maxPriority = -1000
@@ -203,7 +212,7 @@ class Game:
         if depth <= 0:
             self.addRolloutMove(maxDepth)
             self.rollout_moves_lists[-1].append(
-                self.evaluateGame(self.rollout_moves_lists[-1])
+                evaluateGame(self.rollout_moves_lists[-1])
             )  # we append the value of the moves_list
             return
 
@@ -228,9 +237,6 @@ class Game:
         self.iterationRollout(depth - 1, maxDepth)
         self.resetPrevMove()
 
-    def evaluateGame(self, moves_list):
-        return sum(moves_list[i][0] for i in range(len(moves_list)))
-
     def addRolloutMove(self, depth):
         self.rollout_moves_lists.append(self.moves_history[-depth:].copy())
 
@@ -247,7 +253,7 @@ class Game:
 
     def moveIsLegal(self, move):
         if 6 <= move[1] <= 12 and (
-            self.game[move[1]][move[2]][0] == 13 and move[2] == 0 and 6 <= move[3] <= 13
+                self.game[move[1]][move[2]][0] == 13 and move[2] == 0 and 6 <= move[3] <= 13
         ):
             return False
         if 6 <= move[3] <= 12:
@@ -256,28 +262,25 @@ class Game:
             else:
                 return self.game[move[1]][move[2]][0] == self.game[move[3]][move[4]][
                     0
-                ] - 1 and self.cardIsRed(
+                ] - 1 and cardIsRed(
                     self.game[move[1]][move[2]][1]
-                ) != self.cardIsRed(
+                ) != cardIsRed(
                     self.game[move[3]][move[4]][1]
                 )
-        if move[3] >= 2 and move[3] <= 5:
+        if 2 <= move[3] <= 5:
             if move[2] != len(self.game[move[1]]) - 1:
                 return False
             if len(self.game[move[3]]) == 0:
                 return self.game[move[1]][move[2]][0] == 1
             else:
                 return (
-                    self.game[move[1]][move[2]][0] == self.game[move[3]][move[4]][0] + 1
-                    and self.game[move[1]][move[2]][1] == self.game[move[3]][move[4]][1]
+                        self.game[move[1]][move[2]][0] == self.game[move[3]][move[4]][0] + 1
+                        and self.game[move[1]][move[2]][1] == self.game[move[3]][move[4]][1]
                 )
 
-    def cardIsRed(self, card):
-        return card in ["D", "H"]
-
     def makeMove(self, move):
-        self.game[move[3]].extend(self.game[move[1]][move[2] :])
-        del self.game[move[1]][move[2] :]
+        self.game[move[3]].extend(self.game[move[1]][move[2]:])
+        del self.game[move[1]][move[2]:]
         if 6 <= move[1] <= 12:
             if len(self.game[move[1]]) > 0:
                 tmp = self.game[move[1]][move[2] - 1]
@@ -314,9 +317,9 @@ class Game:
                     if prev == (0, 0, 0, 0, 0):
                         count += 1
                     elif (
-                        count >= 5
-                        and (t[1] == prev[1] and t[3] == prev[3])
-                        or (t[1] == prev[3] and t[3] == prev[1])
+                            count >= 5
+                            and (t[1] == prev[1] and t[3] == prev[3])
+                            or (t[1] == prev[3] and t[3] == prev[1])
                     ):
                         return True
         count = 0
@@ -343,15 +346,15 @@ class Game:
             for i in range(1, 8):
                 prevMove = self.moves_history[-i]
                 if (
-                    move[1] == prevMove[3]
-                    and move[2] == prevMove[4] + 1
-                    and move[3] == prevMove[1]
-                    and move[4] == prevMove[2] - 1
+                        move[1] == prevMove[3]
+                        and move[2] == prevMove[4] + 1
+                        and move[3] == prevMove[1]
+                        and move[4] == prevMove[2] - 1
                 ):
                     prevGame = self.game_history[-i - 1]
                     if (
-                        prevGame[prevMove[1]][prevMove[2]]
-                        == self.game[move[1]][move[2]]
+                            prevGame[prevMove[1]][prevMove[2]]
+                            == self.game[move[1]][move[2]]
                     ):
                         return True
         return False

@@ -88,7 +88,7 @@ class Window:
 
     def createGame(self):
         self.canvas = Canvas(self.window, bg="black", borderwidth=5)
-        self.canvas.pack(fill="both", expand="yes")
+        self.canvas.pack(fill="both", expand=1)
 
     def drawCard(self, pos, card):
         assert (
