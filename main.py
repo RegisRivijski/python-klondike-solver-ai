@@ -25,6 +25,7 @@ def playRolloutCallBack():
     if game.defeat(game.moves_history):
         fen.endGame(False)
 
+
 interval = SetInterval(playCallBack, 0.2)
 
 game = Game()
