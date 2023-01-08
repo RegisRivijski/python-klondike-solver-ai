@@ -2,11 +2,6 @@ from Classes.Window import Window
 from Classes.Game import Game
 from Classes.SetInterval import SetInterval
 
-global game
-global fen
-
-iteration = 0
-
 
 def playCallBack():
     game.play()
