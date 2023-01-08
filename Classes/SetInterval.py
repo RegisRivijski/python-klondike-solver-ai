@@ -12,12 +12,12 @@ class IntervalNotValid(Exception):
 class SetInterval:
     def __init__(this, func=None, sec=None, args=[]):
         this.running = False
-        this.func = func  # the function to be run
-        this.sec = sec  # interval in second
-        this.Return = None  # The returned data
+        this.func = func
+        this.sec = sec
+        this.Return = None
         this.args = args
-        this.runOnce = None  # asociated with run_once() method
-        this.runOnceArgs = None  # asociated with run_once() method
+        this.runOnce = None
+        this.runOnceArgs = None
 
         if func is not None and sec is not None:
             this.running = True
@@ -63,15 +63,13 @@ class SetInterval:
             this.TIMER.start()
             function_, Args_ = this.func, this.args
 
-            if this.runOnce is not None:  # someone has provide the run_once
+            if this.runOnce is not None:
                 runOnce, this.runOnce = this.runOnce, None
                 result = runOnce(*(this.runOnceArgs))
                 this.runOnceArgs = None
 
-                # if and only if the result is False. not accept "None"
-                # nor zero.
                 if result is False:
-                    return  # cancel the interval right now
+                    return
 
             this.Return = function_(*Args_)
 
@@ -82,14 +80,11 @@ class SetInterval:
         if cond1 and cond2:
             raise TypeError("A non-numeric object is given")
 
-        # prevent error when providing interval to a blueprint
         if this.running:
             this.TIMER.cancel()
 
         this.sec = sec
 
-        # prevent error when providing interval to a blueprint
-        # if the function hasn't provided yet
         if this.running:
             this.TIMER = threading.Timer(this.sec, this.loop)
             this.TIMER.start()
