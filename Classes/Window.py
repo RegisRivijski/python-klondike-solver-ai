@@ -10,7 +10,7 @@ class Window:
 
     def __init__(self, interval, game=None):
         self.window = Tk()
-        self.window.geometry("1000x700")
+        self.window.geometry("840x700")
         self.window.resizable(width=False, height=False)
         self.interval = interval
         self.createGame()
@@ -146,9 +146,8 @@ class Window:
         if len(self.game[0]) >= 1:
             self.canvas.create_rectangle(10, 10, 110, 150, fill=color, outline="white")
         else:
-            self.canvas.create_rectangle(10, 10, 110, 20, fill="grey", outline="white")
             self.canvas.create_oval(
-                35, 45, 85, 95, fill="grey", outline="forestgreen", width=4
+                35, 45, 85, 95, fill="grey", outline="red", width=4
             )
         if len(self.game[1]) == 0:
             self.canvas.create_rectangle(
@@ -184,10 +183,10 @@ class Window:
 
     def endGame(self, isVictory):
         if isVictory:
-            color = "green3"
-            text = "VICTORY"
+            color = "blue"
+            text = "Victory"
         else:
-            color = "orange"
-            text = "DEFEAT"
+            color = "red"
+            text = "Defeat"
         self.interval.stop()
-        self.canvas.create_text(500, 600, fill=color, font="TIMES 38 bold", text=text)
+        self.canvas.create_text(422, 350, fill=color, font="Times 38 bold", text=text)
