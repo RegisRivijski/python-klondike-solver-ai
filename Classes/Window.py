@@ -8,12 +8,11 @@ class Window:
     __characters = {1: "A", 11: "J", 12: "Q", 13: "K"}
     game = []
 
-    def __init__(self, callBackButton, game=None):
+    def __init__(self, interval, game=None):
         self.window = Tk()
         self.window.geometry("1000x700")
         self.window.resizable(width=False, height=False)
-        self.B = Button(self.window, text="Зробити крок", command=callBackButton)
-        self.B.pack()
+        self.interval = interval
         self.createGame()
         if game == None:
             self.game.append(
@@ -190,5 +189,5 @@ class Window:
         else:
             color = "orange"
             text = "DEFEAT"
-        self.B.pack_forget()
+        self.interval.stop()
         self.canvas.create_text(500, 600, fill=color, font="Arial 30 bold", text=text)

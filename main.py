@@ -1,5 +1,6 @@
 from Classes.Window import Window
 from Classes.Game import Game
+from Classes.SetInterval import SetInterval
 
 global game
 global fen
@@ -24,8 +25,9 @@ def playRolloutCallBack():
     if game.defeat(game.moves_history):
         fen.endGame(False)
 
+interval = SetInterval(playCallBack, 0.2)
 
 game = Game()
-fen = Window(playRolloutCallBack, game.game)
+fen = Window(interval, game.game)
 fen.buildGame()
 fen.window.mainloop()
