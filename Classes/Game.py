@@ -138,6 +138,10 @@ class Game:
             self.moves_history.append([0, 0, 0, 0, 0])
         self.game_history.append(self.saveGame())
 
+        print("Moves in game_history: ", end="")
+        print(len(self.game_history))
+        print()
+
     def makeRandomMove(self):
         self.available_moves = self.evaluateMoves(self.available_moves)
         tmp = []
