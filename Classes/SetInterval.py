@@ -10,7 +10,9 @@ class IntervalNotValid(Exception):
 
 
 class SetInterval:
-    def __init__(self, func=None, sec=None, args=[]):
+    def __init__(self, func=None, sec=None, args=None):
+        if args is None:
+            args = []
         self.running = False
         self.func = func
         self.sec = sec
@@ -93,15 +95,19 @@ class SetInterval:
         else:
             raise TypeError("A non-numeric object is given")
 
-    def change_func(self, func, args=[]):
+    def change_func(self, func, args=None):
 
+        if args is None:
+            args = []
         if not callable(func):
             raise TypeError("non-callable object is given")
 
         self.func = func
         self.args = args
 
-    def run_once(self, func, args=[]):
+    def run_once(self, func, args=None):
+        if args is None:
+            args = []
         self.runOnce = func
         self.runOnceArgs = args
 
