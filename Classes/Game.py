@@ -126,57 +126,42 @@ class Game:
 
     def play(self):
         if self.availableMoves():
-            self.available_moves = self.evaluateMoves(self.available_moves)
-            tmp = []
-            for i in range(len(self.available_moves)):
-                isRepetitive = self.repetitiveMove(self.available_moves[i])
-                if not isRepetitive:
-                    tmp.append(self.available_moves[i])
-            self.available_moves = tmp.copy()
-            if self.available_moves:
-                if len(self.available_moves) > 1:
-                    rdmNbr = randint(0, len(self.available_moves) - 1)
-                    maxMove = rdmNbr
-                else:
-                    maxMove = 0
-                self.makeMove(self.available_moves[maxMove])
-                self.moves_history.append(self.available_moves[maxMove])
-            else:
-                self.dealPile()
-                self.moves_history.append([0, 0, 0, 0, 0])
-            self.available_moves.clear()
+            self.makeRandomMove()
         else:
             self.dealPile()
             self.moves_history.append([0, 0, 0, 0, 0])
         self.game_history.append(self.saveGame())
 
+    def makeRandomMove(self):
+        self.available_moves = self.evaluateMoves(self.available_moves)
+        tmp = []
+        for i in range(len(self.available_moves)):
+            isRepetitive = self.repetitiveMove(self.available_moves[i])
+            if not isRepetitive:
+                tmp.append(self.available_moves[i])
+        self.available_moves = tmp.copy()
+        if self.available_moves:
+            if len(self.available_moves) > 1:
+                rdmNbr = randint(0, len(self.available_moves) - 1)
+                maxMove = rdmNbr
+            else:
+                maxMove = 0
+            self.makeMove(self.available_moves[maxMove])
+            self.moves_history.append(self.available_moves[maxMove])
+        else:
+            self.dealPile()
+            self.moves_history.append([0, 0, 0, 0, 0])
+        self.available_moves.clear()
+
     def playRollout(self, depth):
         moves = []
         if self.availableMoves():
-            moves = self.evaluateMoves(self.available_moves)
-            self.available_moves.clear()
-            tmp = []
-            for i in range(len(moves)):
-                isRepetitive = self.repetitiveMove(moves[i])
-                if not isRepetitive:
-                    tmp.append(moves[i])
-            moves = tmp.copy()
-            if len(moves) <= 0:
-                moves.append([0, 0, 0, 0, 0])
+            moves = self.getNotRepetitiveMoves()
         else:
             moves.append([0, 0, 0, 0, 0])
 
         for move in moves:
-            if move == [0, 0, 0, 0, 0]:
-                self.dealPile()
-            else:
-                self.makeMove(move)
-            self.moves_history.append(move)
-            self.game_history.append(self.saveGame())
-            self.rolloutCounter += 1
-            self.iterationRollout(depth - 1, depth)
-            self.resetPrevMove()
-
+            self.makeRolloutMove(move, depth, depth)
         maxI = -1
         maxV = -5000
         for i in range(len(self.rollout_moves_lists)):
@@ -193,6 +178,19 @@ class Game:
             self.game_history.append(self.saveGame())
 
         self.rollout_moves_lists.clear()
+
+    def getNotRepetitiveMoves(self):
+        result = self.evaluateMoves(self.available_moves)
+        self.available_moves.clear()
+        tmp = []
+        for i in range(len(result)):
+            isRepetitive = self.repetitiveMove(result[i])
+            if not isRepetitive:
+                tmp.append(result[i])
+        result = tmp.copy()
+        if len(result) <= 0:
+            result.append([0, 0, 0, 0, 0])
+        return result
 
     def iterationRollout(self, depth, maxDepth):
         if self.isOver():
@@ -214,30 +212,24 @@ class Game:
 
         moves = []
         if self.availableMoves():
-            moves = self.evaluateMoves(self.available_moves)
-            self.available_moves.clear()
-            tmp = []
-            for i in range(len(moves)):
-                isRepetitive = self.repetitiveMove(moves[i])
-                if not isRepetitive:
-                    tmp.append(moves[i])
-            moves = tmp.copy()
-            if len(moves) <= 0:
-                moves.append([0, 0, 0, 0, 0])
+            moves = self.getNotRepetitiveMoves()
         else:
             moves.append([0, 0, 0, 0, 0])
 
         for move in moves:
-            if move == [0, 0, 0, 0, 0]:
-                self.dealPile()
-            else:
-                self.makeMove(move)
-            self.moves_history.append(move)
-            self.game_history.append(self.saveGame())
-            self.rolloutCounter += 1
-            self.iterationRollout(depth - 1, maxDepth)
-            self.resetPrevMove()
+            self.makeRolloutMove(move, depth, maxDepth)
         return
+
+    def makeRolloutMove(self, move, depth, maxDepth):
+        if move == [0, 0, 0, 0, 0]:
+            self.dealPile()
+        else:
+            self.makeMove(move)
+        self.moves_history.append(move)
+        self.game_history.append(self.saveGame())
+        self.rolloutCounter += 1
+        self.iterationRollout(depth - 1, maxDepth)
+        self.resetPrevMove()
 
     def evaluateGame(self, moves_list):
         return sum(moves_list[i][0] for i in range(len(moves_list)))
@@ -324,7 +316,7 @@ class Game:
                 for i in range(1, 11):
                     if self.game_history[-i] != t:
                         return True
-            if 6 <= t[1] <= 13 and t[3] >= 6 and t[3] <= 13:
+            if 6 <= t[1] <= 13 and 6 <= t[3] <= 13:
                 count = 0
                 for i in range(1, len(self.moves_history) + 1):
                     prev = self.moves_history[-i]
