@@ -146,13 +146,13 @@ class Window:
         if len(self.game[0]) >= 1:
             self.canvas.create_rectangle(10, 10, 110, 150, fill=color, outline="white")
         else:
-            self.canvas.create_rectangle(10, 10, 110, 20, fill="green", outline="white")
+            self.canvas.create_rectangle(10, 10, 110, 20, fill="grey", outline="white")
             self.canvas.create_oval(
-                35, 45, 85, 95, fill="green", outline="forestgreen", width=4
+                35, 45, 85, 95, fill="grey", outline="forestgreen", width=4
             )
         if len(self.game[1]) == 0:
             self.canvas.create_rectangle(
-                130, 10, 230, 150, fill="green", outline="white"
+                130, 10, 230, 150, fill="grey", outline="white"
             )
         else:
             i = 1
@@ -163,7 +163,7 @@ class Window:
         for i in range(2, 6):
             if len(self.game[i]) == 0:
                 self.canvas.create_rectangle(
-                    i * 120 + 130, 10, i * 120 + 230, 150, fill="green", outline="white"
+                    i * 120 + 130, 10, i * 120 + 230, 150, fill="grey", outline="white"
                 )
             else:
                 self.drawCard((120 * i + 120, 10), self.game[i][-1])
@@ -178,7 +178,7 @@ class Window:
                     200,
                     110 + 120 * (i - 6),
                     340,
-                    fill="green",
+                    fill="grey",
                     outline="white",
                 )
 
