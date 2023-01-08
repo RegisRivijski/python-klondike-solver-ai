@@ -52,10 +52,7 @@ class Game:
         return True
 
     def heuristic(self, move):
-        if (
-            2 <= move[2] <= 5
-                and (6 <= move[0] <= 13 or move[0] == 1)
-        ):
+        if 2 <= move[2] <= 5 and (6 <= move[0] <= 13 or move[0] == 1):
             return 5
         if move[0] == 1 and 6 <= move[2] <= 13:
             return 5
@@ -246,15 +243,11 @@ class Game:
             del self.newCard_history[-1]
 
     def cardFacedUp(self, card):
-        return any(
-            (card[0], card[1], 1) in self.game[i] for i in range(len(self.game))
-        )
+        return any((card[0], card[1], 1) in self.game[i] for i in range(len(self.game)))
 
     def moveIsLegal(self, move):
         if 6 <= move[1] <= 12 and (
-            self.game[move[1]][move[2]][0] == 13
-            and move[2] == 0
-            and 6 <= move[3] <= 13
+            self.game[move[1]][move[2]][0] == 13 and move[2] == 0 and 6 <= move[3] <= 13
         ):
             return False
         if 6 <= move[3] <= 12:
@@ -275,10 +268,8 @@ class Game:
                 return self.game[move[1]][move[2]][0] == 1
             else:
                 return (
-                    self.game[move[1]][move[2]][0]
-                    == self.game[move[3]][move[4]][0] + 1
-                    and self.game[move[1]][move[2]][1]
-                    == self.game[move[3]][move[4]][1]
+                    self.game[move[1]][move[2]][0] == self.game[move[3]][move[4]][0] + 1
+                    and self.game[move[1]][move[2]][1] == self.game[move[3]][move[4]][1]
                 )
 
     def cardIsRed(self, card):
@@ -348,11 +339,7 @@ class Game:
         return False
 
     def repetitiveMove(self, move):
-        if (
-            2 <= move[1] <= 13
-            and 2 <= move[3] <= 13
-            and len(self.moves_history) > 9
-        ):
+        if 2 <= move[1] <= 13 and 2 <= move[3] <= 13 and len(self.moves_history) > 9:
             for i in range(1, 8):
                 prevMove = self.moves_history[-i]
                 if (
