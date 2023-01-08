@@ -119,20 +119,20 @@ class Window:
             nbr = card[0]
 
         self.canvas.create_text(
-            pos[0] + 15, pos[1] + 15, fill=color, font="Arial 12 bold", text=nbr
+            pos[0] + 15, pos[1] + 15, fill=color, font="Times 15 bold", text=nbr
         )
         self.canvas.create_text(
             pos[0] + 80,
             pos[1] + 15,
             fill=color,
-            font="Arial 14 bold",
+            font="Times 15 bold",
             text=self.symbDic[card[1]],
         )
         self.canvas.create_text(
             pos[0] + 15,
             pos[1] + 30,
             fill=color,
-            font="Arial 14 bold",
+            font="Times 15 bold",
             text=self.symbDic[card[1]],
         )
         self.window.update()
@@ -190,4 +190,4 @@ class Window:
             color = "orange"
             text = "DEFEAT"
         self.interval.stop()
-        self.canvas.create_text(500, 600, fill=color, font="Arial 30 bold", text=text)
+        self.canvas.create_text(500, 600, fill=color, font="TIMES 38 bold", text=text)

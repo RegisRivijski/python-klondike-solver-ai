@@ -26,7 +26,7 @@ def playRolloutCallBack():
         fen.endGame(False)
 
 
-interval = SetInterval(playCallBack, 0.1)
+interval = SetInterval(playRolloutCallBack, 0.5)
 
 game = Game()
 fen = Window(interval, game.game)
