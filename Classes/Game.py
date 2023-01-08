@@ -1,5 +1,7 @@
 from random import randint
 
+EMPTY_MOVE = (0, 0, 0, 0, 0)
+
 
 def heuristic(move):
     if 2 <= move[2] <= 5 and (6 <= move[0] <= 13 or move[0] == 1):
@@ -308,7 +310,7 @@ class Game:
     def defeat(self, moves_list):
         if len(self.moves_history) > 11:
             t = moves_list[-1]
-            if t == (0, 0, 0, 0, 0):
+            if t == EMPTY_MOVE:
                 for i in range(1, 11):
                     if self.game_history[-i] != t:
                         return True
@@ -316,7 +318,7 @@ class Game:
                 count = 0
                 for i in range(1, len(self.moves_history) + 1):
                     prev = self.moves_history[-i]
-                    if prev == (0, 0, 0, 0, 0):
+                    if prev == EMPTY_MOVE:
                         count += 1
                     elif count >= 5 and (
                         (t[1] == prev[1] and t[3] == prev[3])
