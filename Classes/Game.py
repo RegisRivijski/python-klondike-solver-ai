@@ -16,18 +16,16 @@ class Game:
         self.game_history.append(self.game)
 
     def generateStart(self):
-        index = 0
         nbrCard = 0
-        for i in range(6, len(self.game)):
-            index += 1
-            for j in range(0, index):
+        for index, i in enumerate(range(6, len(self.game)), start=1):
+            for j in range(index):
                 (nbr, color) = self.randomCard()
                 faceup = 0
                 if j == index - 1:
                     faceup = 1
                 self.game[i].append((nbr, color, faceup))
                 nbrCard += 1
-        for i in range(nbrCard, 52):
+        for _ in range(nbrCard, 52):
             (nbr, color) = self.randomCard()
             self.game[0].append((nbr, color, 1))
 
@@ -36,7 +34,7 @@ class Game:
         exists2 = True
         color = 0
         nbr = 0
-        while not (exists1 == False and exists2 == False):
+        while exists1 or exists2:
             color = self.__color[randint(0, 3)]
             nbr = randint(1, 13)
             exists1 = any((nbr, color, 0) in x for x in self.game)
@@ -48,7 +46,7 @@ class Game:
             l = len(self.game[i])
             if l != 13:
                 return False
-            for j in range(0, l):
+            for j in range(l):
                 if j + 1 != self.game[i][j][0]:
                     return False
         return True
@@ -61,9 +59,7 @@ class Game:
             return 5
         if move[0] == 1 and 6 <= move[2] <= 13:
             return 5
-        if 2 <= move[0] <= 5 and 6 <= move[2] <= 13:
-            return -10
-        return 0
+        return -10 if 2 <= move[0] <= 5 and 6 <= move[2] <= 13 else 0
 
     def differentiateHeuristic(self, move):
         if 6 <= move[0] <= 13 and move[2] >= 6 and move[2] <= 13:
@@ -84,7 +80,7 @@ class Game:
 
     def availableMoves(self):
         for i in range(6, len(self.game)):
-            for j in range(0, len(self.game[i])):
+            for j in range(len(self.game[i])):
                 if self.game[i][j][2]:
                     for k in range(2, len(self.game)):
                         if k != i:
@@ -98,10 +94,7 @@ class Game:
                 if self.moveIsLegal(mv):
                     self.available_moves.append(mv)
 
-        if len(self.available_moves) == 0:
-            return False
-        else:
-            return True
+        return len(self.available_moves) != 0
 
     def evaluateMoves(self, moves_list):
         for move in moves_list:
@@ -113,42 +106,34 @@ class Game:
             if each[0] > maxPriority:
                 maxPriority = each[0]
 
-        tmp = []
-        for each in moves_list:
-            if each[0] == maxPriority:
-                tmp.append(each)
-
-        if len(tmp) > 1:
-            for move in tmp:
-                priority = (
-                    move[0]
-                    + self.differentiateHeuristic([move[1], move[2], move[3], move[4]])
-                    + move[0]
-                )
-                move[0] = priority
-            maxPriority = -1000
-            for each in tmp:
-                if each[0] > maxPriority:
-                    maxPriority = each[0]
-
-            tmp2 = []
-            for each in tmp:
-                if each[0] == maxPriority:
-                    tmp2.append(each)
-            return tmp2.copy()
-        else:
+        tmp = [each for each in moves_list if each[0] == maxPriority]
+        if len(tmp) <= 1:
             return tmp.copy()
+        for move in tmp:
+            priority = (
+                move[0]
+                + self.differentiateHeuristic([move[1], move[2], move[3], move[4]])
+                + move[0]
+            )
+            move[0] = priority
+        maxPriority = -1000
+        for each in tmp:
+            if each[0] > maxPriority:
+                maxPriority = each[0]
+
+        tmp2 = [each for each in tmp if each[0] == maxPriority]
+        return tmp2.copy()
 
     def play(self):
         if self.availableMoves():
             self.available_moves = self.evaluateMoves(self.available_moves)
             tmp = []
-            for i in range(0, len(self.available_moves)):
+            for i in range(len(self.available_moves)):
                 isRepetitive = self.repetitiveMove(self.available_moves[i])
                 if not isRepetitive:
                     tmp.append(self.available_moves[i])
             self.available_moves = tmp.copy()
-            if len(self.available_moves) > 0:
+            if self.available_moves:
                 if len(self.available_moves) > 1:
                     rdmNbr = randint(0, len(self.available_moves) - 1)
                     maxMove = rdmNbr
@@ -171,7 +156,7 @@ class Game:
             moves = self.evaluateMoves(self.available_moves)
             self.available_moves.clear()
             tmp = []
-            for i in range(0, len(moves)):
+            for i in range(len(moves)):
                 isRepetitive = self.repetitiveMove(moves[i])
                 if not isRepetitive:
                     tmp.append(moves[i])
@@ -181,12 +166,12 @@ class Game:
         else:
             moves.append([0, 0, 0, 0, 0])
 
-        for i in range(0, len(moves)):
-            if moves[i] == [0, 0, 0, 0, 0]:
+        for move in moves:
+            if move == [0, 0, 0, 0, 0]:
                 self.dealPile()
             else:
-                self.makeMove(moves[i])
-            self.moves_history.append(moves[i])
+                self.makeMove(move)
+            self.moves_history.append(move)
             self.game_history.append(self.saveGame())
             self.rolloutCounter += 1
             self.iterationRollout(depth - 1, depth)
@@ -194,12 +179,12 @@ class Game:
 
         maxI = -1
         maxV = -5000
-        for i in range(0, len(self.rollout_moves_lists)):
+        for i in range(len(self.rollout_moves_lists)):
             if self.rollout_moves_lists[i][-1] > maxV:
                 maxI = i
                 maxV = self.rollout_moves_lists[i][-1]
 
-        for i in range(0, len(self.rollout_moves_lists[maxI]) - 1):
+        for i in range(len(self.rollout_moves_lists[maxI]) - 1):
             if self.rollout_moves_lists[maxI][i] == [0, 0, 0, 0, 0]:
                 self.dealPile()
             else:
@@ -232,7 +217,7 @@ class Game:
             moves = self.evaluateMoves(self.available_moves)
             self.available_moves.clear()
             tmp = []
-            for i in range(0, len(moves)):
+            for i in range(len(moves)):
                 isRepetitive = self.repetitiveMove(moves[i])
                 if not isRepetitive:
                     tmp.append(moves[i])
@@ -242,12 +227,12 @@ class Game:
         else:
             moves.append([0, 0, 0, 0, 0])
 
-        for i in range(0, len(moves)):
-            if moves[i] == [0, 0, 0, 0, 0]:
+        for move in moves:
+            if move == [0, 0, 0, 0, 0]:
                 self.dealPile()
             else:
-                self.makeMove(moves[i])
-            self.moves_history.append(moves[i])
+                self.makeMove(move)
+            self.moves_history.append(move)
             self.game_history.append(self.saveGame())
             self.rolloutCounter += 1
             self.iterationRollout(depth - 1, maxDepth)
@@ -255,16 +240,13 @@ class Game:
         return
 
     def evaluateGame(self, moves_list):
-        count = 0
-        for i in range(0, len(moves_list)):
-            count += moves_list[i][0]
-        return count
+        return sum(moves_list[i][0] for i in range(len(moves_list)))
 
     def addRolloutMove(self, depth):
         self.rollout_moves_lists.append(self.moves_history[-depth:].copy())
 
     def resetPrevMove(self):
-        for i in range(0, len(self.game_history[-2])):
+        for i in range(len(self.game_history[-2])):
             self.game[i] = self.game_history[-2][i].copy()
         del self.game_history[-1]
         del self.moves_history[-1]
@@ -272,19 +254,17 @@ class Game:
             del self.newCard_history[-1]
 
     def cardFacedUp(self, card):
-        for i in range(0, len(self.game)):
-            if (card[0], card[1], 1) in self.game[i]:
-                return True
-        return False
+        return any(
+            (card[0], card[1], 1) in self.game[i] for i in range(len(self.game))
+        )
 
     def moveIsLegal(self, move):
-        if 6 <= move[1] <= 12:
-            if (
-                    self.game[move[1]][move[2]][0] == 13
-                    and move[2] == 0
-                    and 6 <= move[3] <= 13
-            ):
-                return False
+        if 6 <= move[1] <= 12 and (
+            self.game[move[1]][move[2]][0] == 13
+            and move[2] == 0
+            and 6 <= move[3] <= 13
+        ):
+            return False
         if 6 <= move[3] <= 12:
             if len(self.game[move[3]]) == 0:
                 return self.game[move[1]][move[2]][0] == 13
@@ -297,21 +277,20 @@ class Game:
                     self.game[move[3]][move[4]][1]
                 )
         if move[3] >= 2 and move[3] <= 5:
-            if move[2] == len(self.game[move[1]]) - 1:
-                if len(self.game[move[3]]) == 0:
-                    return self.game[move[1]][move[2]][0] == 1
-                else:
-                    return (
-                        self.game[move[1]][move[2]][0]
-                        == self.game[move[3]][move[4]][0] + 1
-                        and self.game[move[1]][move[2]][1]
-                        == self.game[move[3]][move[4]][1]
-                    )
-            else:
+            if move[2] != len(self.game[move[1]]) - 1:
                 return False
+            if len(self.game[move[3]]) == 0:
+                return self.game[move[1]][move[2]][0] == 1
+            else:
+                return (
+                    self.game[move[1]][move[2]][0]
+                    == self.game[move[3]][move[4]][0] + 1
+                    and self.game[move[1]][move[2]][1]
+                    == self.game[move[3]][move[4]][1]
+                )
 
     def cardIsRed(self, card):
-        return card == "D" or card == "H"
+        return card in ["D", "H"]
 
     def makeMove(self, move):
         self.game[move[3]].extend(self.game[move[1]][move[2] :])
@@ -325,11 +304,10 @@ class Game:
                     self.newCard_history.append(1)
                 else:
                     self.newCard_history.append(0)
+        elif move[1] == 1:
+            self.newCard_history.append(1)
         else:
-            if move[1] == 1:
-                self.newCard_history.append(1)
-            else:
-                self.newCard_history.append(0)
+            self.newCard_history.append(0)
 
     def dealPile(self):
         if len(self.game[1]) > 0:
@@ -352,16 +330,16 @@ class Game:
                     prev = self.moves_history[-i]
                     if prev == (0, 0, 0, 0, 0):
                         count += 1
-                    else:
-                        if count >= 5:
-                            if (t[1] == prev[1] and t[3] == prev[3]) or (
-                                t[1] == prev[3] and t[3] == prev[1]
-                            ):
-                                return True
+                    elif (
+                        count >= 5
+                        and (t[1] == prev[1] and t[3] == prev[3])
+                        or (t[1] == prev[3] and t[3] == prev[1])
+                    ):
+                        return True
         count = 0
         anyFaceDown = False
         for i in range(6, len(self.game)):
-            for j in range(0, len(self.game[i])):
+            for j in range(len(self.game[i])):
                 if self.game[i][j][-1] == 0:
                     anyFaceDown = True
 
@@ -378,26 +356,26 @@ class Game:
         return False
 
     def repetitiveMove(self, move):
-        if 2 <= move[1] <= 13 and 2 <= move[3] <= 13:
-            if len(self.moves_history) > 9:
-                for i in range(1, 8):
-                    prevMove = self.moves_history[-i]
+        if (
+            2 <= move[1] <= 13
+            and 2 <= move[3] <= 13
+            and len(self.moves_history) > 9
+        ):
+            for i in range(1, 8):
+                prevMove = self.moves_history[-i]
+                if (
+                    move[1] == prevMove[3]
+                    and move[2] == prevMove[4] + 1
+                    and move[3] == prevMove[1]
+                    and move[4] == prevMove[2] - 1
+                ):
+                    prevGame = self.game_history[-i - 1]
                     if (
-                        move[1] == prevMove[3]
-                        and move[2] == prevMove[4] + 1
-                        and move[3] == prevMove[1]
-                        and move[4] == prevMove[2] - 1
+                        prevGame[prevMove[1]][prevMove[2]]
+                        == self.game[move[1]][move[2]]
                     ):
-                        prevGame = self.game_history[-i - 1]
-                        if (
-                            prevGame[prevMove[1]][prevMove[2]]
-                            == self.game[move[1]][move[2]]
-                        ):
-                            return True
+                        return True
         return False
 
     def saveGame(self):
-        ret = []
-        for each in self.game:
-            ret.append(each.copy())
-        return ret
+        return [each.copy() for each in self.game]

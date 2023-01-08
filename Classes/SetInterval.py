@@ -10,17 +10,17 @@ class IntervalNotValid(Exception):
 
 
 class SetInterval:
-    def __init__(this, func=None, sec=None, args=[]):
-        this.running = False
-        this.func = func
-        this.sec = sec
-        this.Return = None
-        this.args = args
-        this.runOnce = None
-        this.runOnceArgs = None
+    def __init__(self, func=None, sec=None, args=[]):
+        self.running = False
+        self.func = func
+        self.sec = sec
+        self.Return = None
+        self.args = args
+        self.runOnce = None
+        self.runOnceArgs = None
 
         if func is not None and sec is not None:
-            this.running = True
+            self.running = True
 
             if not callable(func):
                 raise TypeError("non-callable object is given")
@@ -28,85 +28,82 @@ class SetInterval:
             if not isinstance(sec, int) and not isinstance(sec, float):
                 raise TypeError("A non-numeric object is given")
 
-            this.TIMER = threading.Timer(this.sec, this.loop)
-            this.TIMER.start()
+            self.TIMER = threading.Timer(self.sec, self.loop)
+            self.TIMER.start()
 
-    def start(this):
-        if not this.running:
-            if not this.isValid():
-                raise IntervalNotValid(
-                    "The function and/or the " + "interval hasn't provided or invalid."
-                )
-            this.running = True
-            this.TIMER = threading.Timer(this.sec, this.loop)
-            this.TIMER.start()
-        else:
+    def start(self):
+        if self.running:
             raise AlreadyRunning("Tried to run an already run interval")
+        if not self.isValid():
+            raise IntervalNotValid(
+                "The function and/or the " + "interval hasn't provided or invalid."
+            )
+        self.running = True
+        self.TIMER = threading.Timer(self.sec, self.loop)
+        self.TIMER.start()
 
-    def stop(this):
-        this.running = False
+    def stop(self):
+        self.running = False
 
-    def isValid(this):
-        if not callable(this.func):
+    def isValid(self):
+        if not callable(self.func):
             return False
 
-        cond1 = not isinstance(this.sec, int)
-        cond2 = not isinstance(this.sec, float)
-        if cond1 and cond2:
-            return False
-        return True
+        cond1 = not isinstance(self.sec, int)
+        cond2 = not isinstance(self.sec, float)
+        return not cond1 or not cond2
 
-    def loop(this):
+    def loop(self):
 
-        if this.running:
-            this.TIMER = threading.Timer(this.sec, this.loop)
-            this.TIMER.start()
-            function_, Args_ = this.func, this.args
+        if self.running:
+            self.TIMER = threading.Timer(self.sec, self.loop)
+            self.TIMER.start()
+            function_, Args_ = self.func, self.args
 
-            if this.runOnce is not None:
-                runOnce, this.runOnce = this.runOnce, None
-                result = runOnce(*(this.runOnceArgs))
-                this.runOnceArgs = None
+            if self.runOnce is not None:
+                runOnce, self.runOnce = self.runOnce, None
+                result = runOnce(*self.runOnceArgs)
+                self.runOnceArgs = None
 
                 if result is False:
                     return
 
-            this.Return = function_(*Args_)
+            self.Return = function_(*Args_)
 
-    def change_interval(this, sec):
+    def change_interval(self, sec):
 
         cond1 = not isinstance(sec, int)
         cond2 = not isinstance(sec, float)
         if cond1 and cond2:
             raise TypeError("A non-numeric object is given")
 
-        if this.running:
-            this.TIMER.cancel()
+        if self.running:
+            self.TIMER.cancel()
 
-        this.sec = sec
+        self.sec = sec
 
-        if this.running:
-            this.TIMER = threading.Timer(this.sec, this.loop)
-            this.TIMER.start()
+        if self.running:
+            self.TIMER = threading.Timer(self.sec, self.loop)
+            self.TIMER.start()
 
-    def change_next_interval(this, sec):
+    def change_next_interval(self, sec):
 
-        if not isinstance(sec, int) and not isinstance(sec, float):
+        if isinstance(sec, (int, float)):
+            self.sec = sec
+        else:
             raise TypeError("A non-numeric object is given")
 
-        this.sec = sec
-
-    def change_func(this, func, args=[]):
+    def change_func(self, func, args=[]):
 
         if not callable(func):
             raise TypeError("non-callable object is given")
 
-        this.func = func
-        this.args = args
+        self.func = func
+        self.args = args
 
-    def run_once(this, func, args=[]):
-        this.runOnce = func
-        this.runOnceArgs = args
+    def run_once(self, func, args=[]):
+        self.runOnce = func
+        self.runOnceArgs = args
 
-    def get_return(this):
-        return this.Return
+    def get_return(self):
+        return self.Return
