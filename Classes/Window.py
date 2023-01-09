@@ -109,14 +109,16 @@ class Window:
         if card[2] == 0:
             return
         color = "Red" if card[1] in ["D", "H"] else "Black"
-        nbr = ""
         nbr = self.__characters[card[0]] if card[0] == 1 or card[0] > 10 else card[0]
         self.canvas.create_text(
             pos[0] + 15, pos[1] + 15, fill=color, font="Times 15 bold", text=nbr
         )
         self.canvas.create_text(
-            pos[0] + 80,
-            pos[1] + 15,
+            pos[0] + 85, pos[1] + 125, fill=color, font="Times 15 bold", text=nbr
+        )
+        self.canvas.create_text(
+            pos[0] + 85,
+            pos[1] + 110,
             fill=color,
             font="Times 15 bold",
             text=self.symbDic[card[1]],
@@ -126,6 +128,27 @@ class Window:
             pos[1] + 30,
             fill=color,
             font="Times 15 bold",
+            text=self.symbDic[card[1]],
+        )
+        self.canvas.create_text(
+            pos[0] + 50,
+            pos[1] + 30,
+            fill=color,
+            font="Times 25 bold",
+            text=self.symbDic[card[1]],
+        )
+        self.canvas.create_text(
+            pos[0] + 50,
+            pos[1] + 70,
+            fill=color,
+            font="Times 20 bold",
+            text=self.symbDic[card[1]],
+        )
+        self.canvas.create_text(
+            pos[0] + 50,
+            pos[1] + 110,
+            fill=color,
+            font="Times 25 bold",
             text=self.symbDic[card[1]],
         )
         self.window.update()
